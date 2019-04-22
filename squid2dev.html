@@ -1,0 +1,726 @@
+<!DOCTYPE html&gt>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Login Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link hrefs='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+  
+  <link  href="styles/styless.css" rel="stylesheet">
+  <link  href="styles/normalize.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="resources/jquery-ui.css">
+  
+  <script src="resources/jquery-1.12.4.js"></script>
+
+  <script src="resources/jquery-ui.js"></script>
+  
+
+
+
+</head>
+
+<style>
+html {
+	font-family:"Arial";
+}
+
+.right {
+    float: right;
+    width: 300px;
+    padding: 1px;
+}
+
+.left {
+	float: left;
+    width: 300px;
+    padding: 1px;
+}
+
+.error {
+	color: red;
+}
+
+.mgmtOpt {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 200px;
+  background-color: #f1f1f1;
+  border: 1px solid #555;
+}
+
+
+
+li {
+  text-align: center;
+  
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+li a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+li a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+</style>
+
+<script type='text/javascript'> 
+	// ON LOAD HANDLER
+	$(function(){
+		// Custom Functions
+		
+		function hideAllButOne(targetPage){
+			$("body > span:visible").not("#banner").hide();
+			$("#banner").show();
+			$("#" + targetPage).show();
+		}
+		
+		hideAllButOne('homePage');
+		// Handels if a user is already logged in
+		$.ajax({
+				url:"squidgLogic.php",
+				method:"POST",
+				data:{ 
+					form:"loggedin"
+				},
+				success:function(result){
+					hideAllButOne("homePage");
+				},
+				error:function(result){
+					$("span:visible").hide();
+					$("#loginPage").show();
+				}
+			});
+	
+		// Login page login button handler
+		$('#loginBttn').click(function(){
+			$('#loginFormErr').html('');
+			$.ajax({
+				url:"squidgLogic.php",
+				method:"POST",
+				data:{ 
+					username:$('#username').val(), 
+					password:$('#password').val(),
+					form:"loginForm"
+				},
+				success:function(result){
+					hideAllButOne("homePage");
+				},
+				error:function(result){
+					var res = result['responseText'];
+					res = jQuery.parseJSON(res);
+					$('#loginFormErr').html(res['error']);
+				}
+			});
+		});
+		// Login page login button handler
+		$('#clearSchedulerFormBttn').click(function(){
+			$('#schedulerForm')[0].reset();
+		});
+		
+		// Scheduler page sumbmit button handler
+		$('#schedulerFormBttn').click(function(){
+			$('#schedulerFormErr').html('');
+			$.ajax({
+				url:"squidgLogic.php",
+				method:"POST",
+				data:{ 
+					organizer:$('#organizer').val(),
+					subject:$('#subject').val(),
+					startTime:$('#startTime').val(),
+					endTime:$('#endTime').val(),
+					location:$('#location').val(),
+					school:$('#school').val(),
+					className:$('#className').val(),
+					classNumber:$('#classNumber').val(),
+					classSection:$('#classSection').val(),
+					classTerm:$('#classTerm').val(),
+					profName:$('#profName').val(),
+					guestLec:$('#guestLec').val(),
+					publishDelay:$('#publishDelay').val(),
+					keyTerms:$('#keyTerms').val(),
+					retentionPeriod:$('#retentionPeriod').val(),
+					form:"schedulerForm"
+				},
+				success:function(result){
+					var res = result;
+					res = jQuery.parseJSON(res);
+					$('#schedulerFormMsg').html(res['message'])
+				},
+				error:function(result){
+					var res = result['responseText'];
+					res = jQuery.parseJSON(res);
+					$('#schedulerFormErr').html(res['error'])
+					$('#schedulerFormMsg').html('')
+				}
+			});
+		});
+		
+		// KalturaEntryUpdater page submit button handler
+		$('#kalturaEntryUpdaterBttn').click(function(){
+			$('#kalturaEntryUpdaterFormErr').html('');
+			$.ajax({
+				url:"squidgLogic.php",
+				method:"POST",
+				data:{ 
+					kalturaEntryUpdater_entryID:$('#kalturaEntryUpdater_entryID').val(),
+					kalturaEntryUpdater_GUID:$('#kalturaEntryUpdater_GUID').val(),
+					form:"kalturaEntryUpdaterForm"
+				},
+				success:function(result){
+					var res = result;
+					res = jQuery.parseJSON(res);
+					$('#kalturaEntryUpdaterFormMsg').html(res['message'])
+				},
+				error:function(result){
+					var res = result['responseText'];
+					res = jQuery.parseJSON(res);
+					$('#kalturaEntryUpdaterFormErr').html(res['error'])
+					$('#kalturaEntryUpdaterFormMsg').html('')
+				}
+			});
+		});
+		
+		// Home link handeler
+		$('#homePageLnk').click(function(){
+			hideAllButOne("homePage");
+		});
+		
+		// Logout link handeler
+		$('#logoutLnk').click(function(){
+			$.ajax({
+				url:"squidgLogic.php",
+				method:"POST",
+				data:{ 
+					form:"logout"
+				},
+				success:function(result){
+					$("span:visible").hide();
+					$("#logoutPage").show();
+				},
+				error:function(result){
+				}
+			});
+		});
+		
+		// Home > "Schedule a Capture" link handeler
+		$('#schedulerPageLnk').click(function(){
+			hideAllButOne("schedulerPage");
+		});
+		$('#kalturaEntryUpdaterPageLnk').click(function(){
+			hideAllButOne("kalturaEntryUpdaterPage");
+		});
+		$('#loginPage').keypress(function(e){
+			if(e.keyCode==13)
+			$('#loginBttn').click();
+		});
+});
+	
+</script>
+
+
+
+
+<body id="body">
+
+<header>
+      <figure style="margin:0;" class="luthumbnail">
+      <img src="images/logo/liberty.png" alt="placeholder" > 
+      </figure>
+      <!--
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700">
+       <title>Login</title>
+	  -->
+<span id="banner">
+		<div id="lu-gh-bar">
+		  <ul1 id="lu-gh-links">
+		    <li id="lu-gh-official"><a href="javascript:void(0)" id="homePageLnk" class="lu-gh-control"3>Home</a></li>
+		    <li><a href="more" data-href="more" id="lu-gh-more" class="lu-gh-control">About</a></li>
+		    <li><a href="more" data-href="more" id="lu-gh-more" class="lu-gh-control">Tools</a></li>
+		  </ul1>
+
+		 <div class="signin">
+		  <ul id="lu-gh-links">
+		    <li> <a id="logoutLnk" href="javascript:void(0)" class="lu-gh-active-link">Logout</a> </li>
+		  </ul>
+		 </div>
+		<ul id="lu-gh-user" style="top: 0px; opacity: 1; display: block;"></ul>
+		</div>
+</span><br>
+
+ </header>
+
+
+<!-- LOGIN PAGE -->
+
+<span id="loginPage">
+	<h3 style="padding-left: 25px";>Scheduler Login</h3>
+	<form id="loginForm" method=POST>
+	<div class="login-wrap">
+	  <div class="login-html">
+	    <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
+	    <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab"></label>
+		  
+			    <div class="login-form">
+			      <div class="sign-in-htm">
+			        <div class="group">
+					
+
+							
+							
+							<label for="user" class="label">Username</label>
+							<input type="text" id="username" name="username" class="input"> <br>
+							<label for="pass" class="label">Password</label>
+							<input type="password" id="password" name="password" class="input" data-type="password"><br>
+							
+		          				<input type="submit" class="button" value="Login" id="loginBttn">
+		        			
+							<span class="error" id="loginFormErr"></span>
+							
+
+
+			        </div>
+			      </div>
+			    </div>
+			
+					
+	    </div>
+	  </div>
+	  
+	</form>
+</span>
+
+<!--END LOGIN PAGE -->
+
+
+
+
+
+<!--- Begin modified HP -->
+<span id="homePage">
+
+	<h3 style="padding-left: 25px;">Lecture Manager</h3><br><br>
+	<div style="padding-left: 25px" class="page-header home__playlist-name-heading">
+		<h4>Manage Schedules</h4>
+		<div class= "mgmtOpt">
+			<ul style="margin-bottom: 0px;">
+				<li><a id="schedulerPageLnk" href="javascript:void(0)"  >Schedule A Capture</a></li>
+				<li>
+					<a id="listRecording" href="http://lulcs02.phones.liberty.edu/cattura/listRecordings/listRecordings.html">Show/Delete</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+</span>
+<!--End Modified HP-->
+
+<!-- SCHEDULER PAGE -->
+<span id="schedulerPage">
+	<h3>Schedule A Capture</h3>
+	<form id="schedulerForm">
+		<table border="1">
+			<tr><td>* Organizer:</td><td>
+									<select id="organizer" name="organizer">
+										<option value="" selected ></option>
+										<option value="lucomomsischedule@liberty.edu">lucomomsischedule@liberty.edu</option>
+										<option value="lucomomsiischedule@liberty.edu">lucomomsiischedule@liberty.edu</option>
+									</select>
+							</td></tr>
+			<tr><td>* Subject:</td><td><input type="text" id="subject" name="subject" ></td></tr>
+			<tr><td>* Start Time (EST):</td><td><input type="text" id="startTime" name="startTime" ><i>YYYY/MM/DD HH:mm:ss</i></td></tr> 
+			<tr><td>* End Time (EST):</td><td><input type="text" id="endTime" name="endTime" ><i>YYYY/MM/DD HH:mm:ss</i></td></tr>
+			<tr><td>* Location:</td><td>
+								<select id="location" name="location">
+									<option value="" selected ></option>
+									<option value="CMHS1025@liberty.edu">CHMS 1025 Auditorium 1</option>
+									<option value="CMHS1014@liberty.edu">CHMS 1014 Auditorium 2</option>
+									<option value="CMHS1047@liberty.edu">CHMS 1047 PA Classroom</option>
+									<option value="CMHS2042@liberty.edu">CHMS 2042 Simulation Classroom 1</option>
+									<option value="CMHS2049@liberty.edu">CHMS 2049 Simulation Classroom 2</option>
+									<option value="CMHS4067@liberty.edu">CHMS 4067 OMM Lab 1</option>
+									<option value="CMHS4005@liberty.edu">CHMS 4005 OMM Lab 2</option>
+									<option value="CMHS4056@liberty.edu">CHMS 4056 Anatomy Lab</option>
+								</select>
+							</td></tr>
+			<!-- <tr><td>* School:</td> <td>-->  <input type="hidden1" id="school" name="school" value="LCOM"> <!-- </td></tr> -->
+			<!-- <tr><td>Class Name:</td><td><input type="text" id="className" name="className" ></td></tr> -->
+			<tr><td>* Class Number:</td><td><input type="text" id="classNumber" name="classNumber" ></td></tr>
+			<tr><td>* Class Section:</td><td><input type="text" id="classSection" name="classSection" value="001"></td></tr>
+			<tr><td>* Class Term:</td><td><input type="text" id="classTerm" name="classTerm" value="201925"></td></tr>
+			<!-- <tr><td>Professor's Name:</td><td><input type="text" id="profName" name="profName" ></td></tr> -->
+			<!-- <tr><td>Guest lecturer:</td><td>
+											<select id="guestLec">
+												<option value="" selected>No</option>
+												<option value="yes">Yes</option>
+											</select>
+										</td></tr> -->
+			<!-- <tr><td>Publishing delay:</td><td><input type="text" id="publishDelay" name="publishDelay" value="0"></td></tr> --> 
+			<!-- <tr><td>Key Terms/tags:</td><td><input type="text" id="keyTerms" name="keyTerms" ></td></tr> --> 
+			<!-- <tr><td>* Retention Period:</td><td> --> <input type="hidden1" id="retentionPeriod" name="retentionPeriod" value="48"><!-- </td></tr> -->
+		</table>
+		<p>* Required field</p>
+		<input type="button" id="schedulerFormBttn" value="Submit">  <input type="button" id="clearSchedulerFormBttn" value="Clear"><br>
+		<span class="error" id="schedulerFormErr"></span>
+		<span id="schedulerFormMsg"></span>
+	</form>
+</span>
+<!-- END SCHEDULER PAGE -->
+
+
+<span id="logoutPage">
+	<h3>You have successfully logged out!</h3>
+</span>
+
+
+
+</body>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" style="" class=" js canvas no-touch history cssanimations cssgradients csstransforms csstransforms3d csstransitions video audio localstorage formvalidation">
+
+
+<style type="text/css" media="screen">
+
+<!--[if lt IE 9]> 
+
+    body{-ms-overflow-y : scroll;}
+</style>
+<![endif]-->
+<!--Add static header-->
+
+<!-- End Static Header -->
+
+<!-- Begin Static Css-->
+<link href="fvk/rfdefk.css" media="screen" rel="stylesheet">
+<!--End Static Css-->
+
+<body class="module-home controller-index action-index  menu-horizontal v2ui shrink--enabled">
+    
+                        
+
+
+
+    <!-- Carousel -->
+<div id="entrySlider" class="imageSlide carousel nofocus slide  carenrightleft" style="user-select: none;">
+<div class="carousel-indicators-outer-wrapper">
+<div class="carousel-indicators-wrapper">
+                   
+</div>
+ </div>
+<!--End Keep-->
+
+
+<!-- Begin Containter for Endpoints-->
+<span id = "homePage">
+<div class="container">
+    <!-- other playlists -->
+    <h1 class="page-header home__playlist-name-heading">
+        <p>First Floor </p>
+    </h1>
+
+<ul class="thumbnails">
+	    <li class="span4">
+            <div class="photo-group featured_wrapper" >
+                <a href="http://10.226.12.29/#dashboard">
+                    <img src="images/rooms/paClass.jpg" alt="AI " width="478" height="269">
+                        <div class="overlay-wrapper"> </div>
+                        <div class="thumb_icon label-inverse wrap-icon-film" aria-label="Video">
+                            <p class="thumb_icon_content">
+                                <i class="icon-film icon-white" aria-hidden="true"></i>
+                            </p>
+                        </div>
+                        <div class="thumb_labels_wrapper">
+                            <div class="thumb_time label-inverse">
+                                 <p class="thumb_time_content">
+                                    
+                    	            <span class="duration"></span>
+                                </p>
+                            </div>
+                        <div class="thumb_name label-inverse">
+                            <p class="thumb_name_content">Auditorium I - 1025 (Red)  </p>
+                        </div>
+                         <div class="thumb_extra">
+                            <div class="hidden visible-v2ui">
+                                <div class="progress history-progress started">
+                                    <div class="bar" style="width: 0%">
+                                        
+                                    </div>
+                                </div>
+                            </div>            
+                        </div>
+                        </div>
+                </a>
+            </div>
+        </li>
+        <li class="span4">
+                    <div class="photo-group featured_wrapper" >
+                        <a href="http://10.226.12.16/#dashboard">
+                            <img src="images/rooms/paClass.jpg" alt="AII " width="478" height="269">
+                                <div class="overlay-wrapper"> </div>
+                                <div class="thumb_icon label-inverse wrap-icon-film" aria-label="Video">
+                                    <p class="thumb_icon_content">
+                                        <i class="icon-film icon-white" aria-hidden="true"></i>
+                                    </p>
+                                </div>
+                                <div class="thumb_labels_wrapper">
+                                   
+                                <div class="thumb_name label-inverse">
+                                    <p class="thumb_name_content">Auditorium II - 1014  (Blue) </p>
+                                </div>
+                                 <div class="thumb_extra">
+                                    <div class="hidden visible-v2ui">
+                                        <div class="progress history-progress started">
+                                            <div class="bar" style="width: 0%">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>            
+                                </div>
+                                </div>
+                        </a>
+                    </div>
+                </li>
+        <li class="span2">
+            <div class="photo-group featured_wrapper">
+                <a href="ihttp://10.226.12.16/#dashboard">
+                    <img src="images/rooms/paClass.jpg" alt="PA Class Room" width="478" height="269">
+                        <div class="overlay-wrapper"> </div>
+                        <div class="thumb_icon label-inverse wrap-icon-film" aria-label="Video">
+                            <p class="thumb_icon_content">
+                                <i class="icon-film icon-white" aria-hidden="true"></i>
+                            </p>
+                        </div>
+                        <div class="thumb_labels_wrapper">
+                            <div class="thumb_time label-inverse">
+                                <p class="thumb_time_content">
+                                    <span class="views">
+                                        20&nbsp;&nbsp;
+                                        <i class="icon-eye-open icon-white"></i>
+                                        <span class="seperator">&nbsp;|&nbsp;</span>
+                                    </span>
+                                </p>
+                            </div>
+                                <div class="thumb_name label-inverse">
+                                    <p class="thumb_name_content">PA Class Roon</p>
+                                </div>
+                                <div class="thumb_extra">
+                                    <div class="hidden visible-v2ui"></div>
+                                </div>
+                        </div>
+                </a>
+            </div>
+        </li>
+    </ul>
+
+    <h1 class="page-header home__playlist-name-heading" style="margin-bottom: 10px;margin-top: 0px;">
+        <P class="clickable-header" >Second Floor </i></P>
+    </h1>
+
+    <ul class="thumbnails" style="margin-top: 0px;margin-bottom: 10px;"">
+	    <li class="span4">
+            <div class="photo-group featured_wrapper">
+                <a href="/media/t/1_pv5olrx9">
+                    <img src="images/rooms/sim2042.jpg" alt="Simulation Lab 2042" width="478" height="269">
+                    <div class="overlay-wrapper"> </div>
+                    <div class="thumb_icon label-inverse wrap-icon-film" aria-label="Video">
+                        <p class="thumb_icon_content">
+                            <i class="icon-film icon-white" aria-hidden="true"></i>
+                        </p>
+                    </div>
+                    <div class="thumb_labels_wrapper">
+                        <div class="thumb_time label-inverse">
+                            <p class="thumb_time_content">
+                                <span class="views">
+                                42,685&nbsp;&nbsp;<i class="icon-eye-open icon-white"></i><span class="seperator">&nbsp;|&nbsp;</span>
+                                </span>
+                                
+                            </p>
+                        </div>
+                        <div class="thumb_name label-inverse">
+                            <p class="thumb_name_content">Simulation Lab 2042</p>
+                        </div>
+                    <div class="thumb_extra"></div>
+                    </div>
+                </a>
+            </div>
+         </li>
+
+        <li class="span2">
+            <div class="photo-group featured_wrapper">
+                <a href="/media/t/1_kct71y26">
+                    <img src="images/rooms/sim2049.jpg" alt="Simulation Lab 2049" width="478" height="269">
+                        <div class="overlay-wrapper"> </div>
+                            <div class="thumb_icon label-inverse wrap-icon-film" aria-label="Video">
+                                <p class="thumb_icon_content">
+                                    <i class="icon-film icon-white" aria-hidden="true"></i>
+                                </p>
+                            </div>
+                            <div class="thumb_labels_wrapper">
+                                <div class="thumb_time label-inverse">
+                                    <p class="thumb_time_content">
+                                        <span class="views">
+                                            36,483&nbsp;&nbsp;<i class="icon-eye-open icon-white"></i>
+                                            <span class="seperator">&nbsp;|&nbsp;</span>
+                                        </span>
+                            </div>
+                            <div class="thumb_name label-inverse">
+                                <p class="thumb_name_content">Simulation Lab 2049</p>
+                            </div>
+                </a>
+            </div>
+        </li>
+
+        <li class="span4">
+            <div  >
+                
+                   <img src="images/rooms/blankSpace.jpg" alt="Simulation Lab 2049" width="478" height="269">
+                        
+                        
+                            <p >
+                                <i class="icon-film icon-white" style="color:white" aria-hidden="true"></i>
+                            </p>
+                       
+                       
+                           
+                       
+                
+            </div>
+        </li>
+
+        <h1 class="page-header home__playlist-name-heading" style="margin-bottom: 0;">
+            <P class="clickable-header" >Forth Floor </i></P>
+        </h1>
+
+<ul class="thumbnails" style="margin-left: 0px;">
+        <li class="span4">
+            <div class="photo-group featured_wrapper" >
+                <a href="http://10.226.12.29/#dashboard">
+                    <img src="images/rooms/anatomyR.jpg" alt="AI " width="478" height="269">
+                        <div class="overlay-wrapper"> </div>
+                        <div class="thumb_icon label-inverse wrap-icon-film" aria-label="Video">
+                            <p class="thumb_icon_content">
+                                <i class="icon-film icon-white" aria-hidden="true"></i>
+                            </p>
+                        </div>
+                        <div class="thumb_labels_wrapper">
+                            
+                        <div class="thumb_name label-inverse">
+                            <p class="thumb_name_content">Anatomy Lab  </p>
+                        </div>
+                         <div class="thumb_extra">
+                            <div class="hidden visible-v2ui">
+                                <div class="progress history-progress started">
+                                    <div class="bar" style="width: 0%">
+                                        
+                                    </div>
+                                </div>
+                            </div>            
+                        </div>
+                        </div>
+                </a>
+            </div>
+        </li>
+        <li class="span4">
+                    <div class="photo-group featured_wrapper" >
+                        <a href="http://10.226.12.16/#dashboard">
+                            <img src="images/rooms/ommF.jpg" alt="AII " width="478" height="269">
+                                <div class="overlay-wrapper"> </div>
+                                <div class="thumb_icon label-inverse wrap-icon-film" aria-label="Video">
+                                    <p class="thumb_icon_content">
+                                        <i class="icon-film icon-white" aria-hidden="true"></i>
+                                    </p>
+                                </div>
+                                <div class="thumb_labels_wrapper">
+                                    <div class="thumb_time label-inverse">
+                                         <p class="thumb_time_content">
+                                            
+                                            <span class="duration"></span>
+                                        </p>
+                                    </div>
+                                <div class="thumb_name label-inverse">
+                                    <p class="thumb_name_content">OMM Lab I </p>
+                                </div>
+                                 <div class="thumb_extra">
+                                    <div class="hidden visible-v2ui">
+                                        <div class="progress history-progress started">
+                                            <div class="bar" style="width: 0%">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>            
+                                </div>
+                                </div>
+                        </a>
+                    </div>
+                </li>
+        <li class="span2">
+            <div class="photo-group featured_wrapper">
+                <a href="ihttp://10.226.12.16/#dashboard">
+                    <img src="images/rooms/omm2R.jpg" alt="PA Class Room" width="478" height="269">
+                        <div class="overlay-wrapper"> </div>
+                        <div class="thumb_icon label-inverse wrap-icon-film" aria-label="Video">
+                            <p class="thumb_icon_content">
+                                <i class="icon-film icon-white" aria-hidden="true"></i>
+                            </p>
+                        </div>
+                        <div class="thumb_labels_wrapper">
+                            
+                                <p class="thumb_time_content">
+                                    <span class="views">
+                                        20&nbsp;&nbsp;
+                                        <i class="icon-eye-open icon-white"></i>
+                                        <span class="seperator">&nbsp;|&nbsp;</span>
+                                    </span>
+                                </p>
+                            
+                                <div class="thumb_name label-inverse">
+                                    <p class="thumb_name_content">OMM Lab II</p>
+                                </div>
+                                <div class="thumb_extra">
+                                    <div class="hidden visible-v2ui"></div>
+                                </div>
+                        </div>
+                </a>
+            </div>
+        </li>
+    </ul>
+<span>
+<!--End Container For endpoitns-->
+
+</div>
+            </div>
+            <div id="push"></div>
+        </div>
+    
+
+<!-- viewhook start siteFooter -->
+
+<!-- viewhook end siteFooter --><script type="text/javascript">
+    //<![CDATA[
+
+        var headerSearchFormTarget = document.getElementById('eSearch-link');
+        if(headerSearchFormTarget !== null) {
+            kmsReact.ReactDOM.render(kmsReact.React.createElement(kmsReact.HeaderSearchForm,{ searchUrl: '/esearch/search?keyword', placeholder: 'Search all media', targetId: 'logoMark', renderTargetId: 'logoMarkTarget', headerId: 'navbar-inner-wrapper', headerLinkClass: 'eSearch__link', clearElementId: 'toplinks' ,mobileClearElementSelector: '.js-desktop-upload-menu', expanded: 0, tabIndex: 110} ), headerSearchFormTarget);
+        }    //]]>
+</script>
+<script>
+if (top != self)
+{
+    top.location=self.document.location;
+}
+</script>
+    </div>
+    
+</body></html>
+ 
+
+</html>
